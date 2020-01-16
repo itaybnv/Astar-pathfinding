@@ -1,7 +1,7 @@
-function setup() {
-  // put setup code here
+setup = () => {
+  createCanvas(600,600)
 }
 
-function draw() {
-  // put drawing code here
+draw = () => {
+  background(0)
 }
