@@ -1,7 +1,8 @@
 // Unrelated to A* algorithm
-let cols = 10;
-let rows = 10;
+let cols = 20;
+let rows = 20;
 let grid = new Array(cols);
+let isStart = false;
 
 // Related to A* algorithm
 let openSet = [];
@@ -10,20 +11,16 @@ let start = null;
 let target = null;
 
 setup = () => {
-	createCanvas(600, 600);
+	createCanvas(800, 800);
 	makeEmptyGrid();
-
-	// Set static end and start for testing
-	start = grid[2][2];
-	target = grid[6][8];
-
-	// Add start to the openSet
-	openSet.push(start);
 };
 
 draw = () => {
-	// Draw the grid
-	drawGrid(width / cols);
+	if (!isStart) {
+		// Draw the grid
+		drawGrid(width / cols);
+		return;
+	}
 
 	// If openSet is empty, algorithm is done / no path found
 	if (!openSet) {
@@ -51,9 +48,9 @@ draw = () => {
 	let neighbours = getNeighbours(currNode);
 	// For each neighbour
 	for (let i = 0; i < neighbours.length; i++) {
-    if (!neighbours[i]){
-      continue;
-    }
+		if (!neighbours[i]) {
+			continue;
+		}
 
 		// If current neighbour is an obstacle, or is in closedSet, skip to next neighbour
 		if (neighbours[i].state === 1 || closedSet.indexOf(neighbours[i]) !== -1) {
@@ -75,6 +72,32 @@ draw = () => {
 				openSet.push(neighbours[i]);
 			}
 		}
+	}
+};
+
+mousePressed = () => {
+	let nodeWidth = width / cols;
+
+	// Get the rect the mouse pressed
+	let i = Math.floor(mouseX / nodeWidth);
+	let j = Math.floor(mouseY / nodeWidth);
+	// If start wasn't defined yet
+	if (!start) {
+		start = grid[j][i];
+		fill("rgb(0,255,0)");
+		rect(start.x * nodeWidth, start.y * nodeWidth, nodeWidth, nodeWidth);
+	}
+	// If target wasn't defined yet
+	else if (!target) {
+		target = grid[j][i];
+		fill("rgb(100%,0%,10%)");
+		rect(target.x * nodeWidth, target.y * nodeWidth, nodeWidth, nodeWidth);
+	}
+	// Set obstacles
+	else {
+		// Add start to the openSet
+		openSet.push(start);
+		isStart = true;
 	}
 };
 
@@ -114,25 +137,16 @@ getNeighbours = node => {
 	// }
 	try {
 		neighbours.push(grid[node.y - 1][node.x]);
-	} catch (error) {
-		console.log("Edge");
-	}
+	} catch (error) {}
 	try {
 		neighbours.push(grid[node.y + 1][node.x]);
-	} catch (error) {
-		console.log("Edge");
-	}
+	} catch (error) {}
 	try {
 		neighbours.push(grid[node.y][node.x - 1]);
-	} catch (error) {
-		console.log("Edge");
-	}
+	} catch (error) {}
 	try {
 		neighbours.push(grid[node.y][node.x + 1]);
-	} catch (error) {
-		console.log("Edge");
-	}
-
+	} catch (error) {}
 	return neighbours;
 };
 
@@ -150,10 +164,12 @@ lowestFScoreNodeIndex = () => {
 drawGrid = nodeWidth => {
 	for (let i = 0; i < cols; i++) {
 		for (let j = 0; j < rows; j++) {
-			if (grid[i][j].state === 0) {
-				fill(255);
-			} else fill(0);
-			rect(j * nodeWidth, i * nodeWidth, nodeWidth, nodeWidth);
+			if (grid[i][j] !== start && grid[i][j] !== target) {
+				if (grid[i][j].state === 0) {
+					fill(255);
+				} else fill(0);
+				rect(j * nodeWidth, i * nodeWidth, nodeWidth, nodeWidth);
+			}
 		}
 	}
 };
@@ -175,10 +191,10 @@ clearGrid = () => {
 };
 
 drawPath = nodeWidth => {
-  fill(255, 204, 100);
-  let node = target;
-  while(node != start) {
-    rect(node.x * nodeWidth, node.y * nodeWidth, nodeWidth, nodeWidth);
-    node = node.parent;
-  }
-}
+	fill(255, 204, 100);
+	let node = target;
+	while (node != start) {
+		rect(node.x * nodeWidth, node.y * nodeWidth, nodeWidth, nodeWidth);
+		node = node.parent;
+	}
+};
