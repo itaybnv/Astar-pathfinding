@@ -1,6 +1,6 @@
 // Unrelated to A* algorithm
-let cols = 20;
-let rows = 20;
+let cols = 12;
+let rows = 12;
 let grid = new Array(cols);
 let isStart = false;
 
@@ -13,6 +13,8 @@ let target = null;
 setup = () => {
 	createCanvas(800, 800);
 	makeEmptyGrid();
+
+	frameRate(144);
 };
 
 draw = () => {
@@ -21,7 +23,7 @@ draw = () => {
 		drawGrid(width / cols);
 		return;
 	}
-
+	drawGrid(width / cols);
 	// If openSet is empty, algorithm is done / no path found
 	if (!openSet) {
 		noLoop();
@@ -57,10 +59,10 @@ draw = () => {
 			continue;
 		}
 
-		let hScore = getHScore(neighbours[i]);
+		let hScore = neighbours[i].distanceFrom(target);
 		// This comes from the assumption that every step takes 1 cost
 		// no matter in what direction the step was taken in
-		let newGScore = 1 + currNode.newGScore;
+		let newGScore = neighbours[i].distanceFrom(currNode) + currNode.newGScore;
 		let newFScore = newGScore + hScore;
 		if (
 			openSet.indexOf(neighbours[i]) === -1 ||
@@ -84,14 +86,12 @@ mousePressed = () => {
 	// If start wasn't defined yet
 	if (!start) {
 		start = grid[j][i];
-		fill("rgb(0,255,0)");
-		rect(start.x * nodeWidth, start.y * nodeWidth, nodeWidth, nodeWidth);
+		start.state = 3;
 	}
 	// If target wasn't defined yet
 	else if (!target) {
 		target = grid[j][i];
-		fill("rgb(100%,0%,10%)");
-		rect(target.x * nodeWidth, target.y * nodeWidth, nodeWidth, nodeWidth);
+		target.state = 4;
 	}
 	// Set obstacles
 	else {
@@ -101,52 +101,21 @@ mousePressed = () => {
 	}
 };
 
-getHScore = node => {
-	// The heuristic function is the distance from the center of the node to the target
-	let nodeCenter = {
-		x: node.x + width / (rows * 2),
-		y: node.y + height / (cols * 2)
-	};
-	let targetCenter = {
-		x: target.x + width / (rows * 2),
-		y: node.y + height / (cols * 2)
-	};
-
-	return Math.sqrt(
-		Math.pow(nodeCenter.x - targetCenter.x, 2) +
-			Math.pow(nodeCenter.y - targetCenter.y, 2)
-	);
-};
-
 getNeighbours = node => {
 	// Go through the adjacent nodes and add them to neighbours array
 	let neighbours = [];
-
-	//   THIS INCLUDES CORNERS
-	// for (let i = node.y - 1; i <= node.y + 1; i++) {
-	// 	for (let j = node.x - 1; j < node.x + 1; j++) {
-	// 		// Add only neighbours that are in the boundries and aren't in closedSet
-	// 		if (closedSet.indexOf(grid[i][j]) === -1) {
-	// 			try {
-	// 				neighbours.push(grid[i][j]);
-	// 			} catch (error) {
-	// 				console.log("Tried adding a node out of bounds");
-	// 			}
-	// 		}
-	// 	}
-	// }
-	try {
-		neighbours.push(grid[node.y - 1][node.x]);
-	} catch (error) {}
-	try {
-		neighbours.push(grid[node.y + 1][node.x]);
-	} catch (error) {}
-	try {
-		neighbours.push(grid[node.y][node.x - 1]);
-	} catch (error) {}
-	try {
-		neighbours.push(grid[node.y][node.x + 1]);
-	} catch (error) {}
+	for (let i = node.y - 1; i <= node.y + 1; i++) {
+		for (let j = node.x - 1; j <= node.x + 1; j++) {
+			try {
+				// Add only neighbours that are in the boundries and aren't in closedSet
+				if (closedSet.indexOf(grid[i][j]) === -1) {
+					neighbours.push(grid[i][j]);
+				}
+			} catch (error) {
+				console.log("Tried adding a node out of bounds");
+			}
+		}
+	}
 	return neighbours;
 };
 
@@ -164,12 +133,22 @@ lowestFScoreNodeIndex = () => {
 drawGrid = nodeWidth => {
 	for (let i = 0; i < cols; i++) {
 		for (let j = 0; j < rows; j++) {
-			if (grid[i][j] !== start && grid[i][j] !== target) {
-				if (grid[i][j].state === 0) {
-					fill(255);
-				} else fill(0);
-				rect(j * nodeWidth, i * nodeWidth, nodeWidth, nodeWidth);
+			// state = 0 -> not checked, 1 -> checking, 2 -> checked and closed,
+			//3 -> start, 4 -> target, 5 -> obstacle
+			if (grid[i][j].state === 0) {
+				fill(255);
+			} else if (grid[i][j].state === 1) {
+				fill("rgb(0,255,0)");
+			} else if (grid[i][j].state === 2) {
+				fill("rgb(255,0,0)");
+			} else if (grid[i][j].state === 3) {
+				fill("rgb(150,0,255)");
+			} else if (grid[i][j].state === 4) {
+				fill("rgb(20,0,50)");
+			} else if (grid[i][j].state === 5) {
+				fill(0);
 			}
+			rect(j * nodeWidth, i * nodeWidth, nodeWidth, nodeWidth);
 		}
 	}
 };
