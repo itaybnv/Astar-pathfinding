@@ -148,9 +148,6 @@ lowestFScoreNodeIndex = () => {
 			lowestNodeIndex = i;
 		}
 	}
-
-	console.log(openSet);
-	console.log(openSet[lowestNodeIndex]);
 	return lowestNodeIndex;
 };
 
