@@ -6,8 +6,7 @@ class Node {
 	constructor(_x, _y) {
 		this.x = _x;
 		this.y = _y;
-		this.fScore = Number.MAX_SAFE_INTEGER;
-		this.gScore = Number.MAX_SAFE_INTEGER;
+		this.fScore = -1;
 		this.state = 0;
 		this.parent = null;
 	}
