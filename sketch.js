@@ -123,7 +123,7 @@ mouseDragged = () => {
 	let j = Math.floor(mouseY / nodeWidth);
 
 	// Set obstacles only if algorithm hasn't started yet
-	if (!isStart) {
+	if (!isStart && grid[j][i].state !== 3 && grid[j][i].state !== 4) {
 		grid[j][i].state = 5;
 	}
 };
@@ -171,13 +171,13 @@ drawGrid = nodeWidth => {
 			if (grid[i][j].state === 0) {
 				fill(255);
 			} else if (grid[i][j].state === 1) {
-				fill("rgb(0,255,0)");
+				fill("rgb(20,150,200)");
 			} else if (grid[i][j].state === 2) {
-				fill("rgb(255,0,0)");
+				fill("rgb(255,20,20)");
 			} else if (grid[i][j].state === 3) {
-				fill("rgb(150,0,255)");
+				fill("rgb(109,200,109)");
 			} else if (grid[i][j].state === 4) {
-				fill("rgb(20,0,50)");
+				fill("rgb(0,255,0)");
 			} else if (grid[i][j].state === 5) {
 				fill(0);
 			}
