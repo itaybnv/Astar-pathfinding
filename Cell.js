@@ -1,8 +1,8 @@
-// x = the x location in the node grid
-// y = the y location in the node grid
+// x = the x location in the cell grid
+// y = the y location in the cell grid
 // state = 0 -> not checked, 1 -> checking, 2 -> checked and closed, 3 -> start, 4 -> target, 5 -> obstacle
-// parent = the previous node that makes the shortest known path to this node
-class Node {
+// parent = the previous cell that makes the shortest known path to this cell
+class Cell {
 	constructor(_x, _y) {
 		this.x = _x;
 		this.y = _y;
@@ -12,18 +12,18 @@ class Node {
 		this.parent = null;
 	}
 
-	distanceFrom = node => {
+	distanceFrom = cell => {
 		let thisCenter = {
 			x: this.x + width / (rows * 2),
 			y: this.y + height / (cols * 2)
 		};
-		let nodeCenter = {
-			x: node.x + width / (rows * 2),
-			y: node.y + height / (cols * 2)
+		let cellCenter = {
+			x: cell.x + width / (rows * 2),
+			y: cell.y + height / (cols * 2)
 		};
 
 		return Math.sqrt(
-			Math.pow(this.x - node.x, 2) + Math.pow(this.y - node.y, 2)
+			Math.pow(this.x - cell.x, 2) + Math.pow(this.y - cell.y, 2)
 		);
 	};
 }
