@@ -55,16 +55,22 @@ draw = () => {
 		}
 
 		// If current neighbour is an obstacle, or is in closedSet, skip to next neighbour
-		if (neighbours[i].state === 1 || closedSet.indexOf(neighbours[i]) !== -1) {
+		if (neighbours[i].state === 5 || closedSet.indexOf(neighbours[i]) !== -1) {
 			continue;
 		}
 
+		// The hueristic function is the distance from the neighbour to the target
 		let hScore = neighbours[i].distanceFrom(target);
-		// This comes from the assumption that every step takes 1 cost
-		// no matter in what direction the step was taken in
-		let newGScore = neighbours[i].distanceFrom(currNode) + currNode.newGScore;
+
+		// The g score is the distance from neighbour to the current node + the path it took until now
+		let newGScore =
+			neighbours[i].distanceFrom(currNode) +
+			(currNode.fScore === -1 ? 0 : currNode.fScore);
+
 		let newFScore = newGScore + hScore;
+		// If neighbour isn't in openSet or the new path is shorter than the known path, update it.
 		if (
+			neighbours[i].fScore === -1 ||
 			openSet.indexOf(neighbours[i]) === -1 ||
 			newFScore < neighbours[i].fScore
 		) {
@@ -102,9 +108,18 @@ mousePressed = () => {
 		target = grid[j][i];
 		target.state = 4;
 	}
-	// Set obstacles only if algorithm hasn't started yet
-	else if (isStart) {
+};
 
+mouseDragged = () => {
+	let nodeWidth = width / cols;
+
+	// Get the rect the mouse pressed
+	let i = Math.floor(mouseX / nodeWidth);
+	let j = Math.floor(mouseY / nodeWidth);
+
+	// Set obstacles only if algorithm hasn't started yet
+	if (!isStart) {
+		grid[j][i].state = 5;
 	}
 };
 
@@ -134,6 +149,8 @@ lowestFScoreNodeIndex = () => {
 		}
 	}
 
+	console.log(openSet);
+	console.log(openSet[lowestNodeIndex]);
 	return lowestNodeIndex;
 };
 
