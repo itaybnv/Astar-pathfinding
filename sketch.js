@@ -1,6 +1,6 @@
 // Unrelated to A* algorithm
-let cols = 12;
-let rows = 12;
+let cols = 50;
+let rows = 50;
 let grid = new Array(cols);
 let isStart = false;
 
@@ -13,28 +13,25 @@ let target = null;
 setup = () => {
 	createCanvas(800, 800);
 	makeEmptyGrid();
-
-	frameRate(144);
 };
 
 draw = () => {
+	drawGrid(width / cols);
 	if (!isStart) {
 		// Draw the grid
-		drawGrid(width / cols);
 		return;
 	}
-	drawGrid(width / cols);
 	// If openSet is empty, algorithm is done / no path found
 	if (!openSet) {
 		noLoop();
 		return;
 	}
+	drawPath(width / cols);
 	// If start and end aren't set yet, don't start algorithm
 
 	// Find lowest f score node
 	let currNodeIndex = lowestFScoreNodeIndex();
 	let currNode = openSet[currNodeIndex];
-
 	// Remove current node from openSet array
 	openSet.splice(currNodeIndex, 1);
 
@@ -43,19 +40,18 @@ draw = () => {
 
 	// If true, current = target -> path found!
 	if (currNode === target) {
-		drawPath(width / cols);
 		noLoop();
 	}
 
 	let neighbours = getNeighbours(currNode);
 	// For each neighbour
 	for (let i = 0; i < neighbours.length; i++) {
-		if (!neighbours[i]) {
-			continue;
-		}
-
 		// If current neighbour is an obstacle, or is in closedSet, skip to next neighbour
-		if (neighbours[i].state === 5 || closedSet.indexOf(neighbours[i]) !== -1) {
+		if (
+			!neighbours[i] ||
+			neighbours[i].state === 5 ||
+			closedSet.indexOf(neighbours[i]) !== -1
+		) {
 			continue;
 		}
 
@@ -65,7 +61,7 @@ draw = () => {
 		// The g score is the distance from neighbour to the current node + the path it took until now
 		let newGScore =
 			neighbours[i].distanceFrom(currNode) +
-			(currNode.fScore === -1 ? 0 : currNode.fScore);
+			(currNode.gScore === -1 ? 0 : currNode.gScore);
 
 		let newFScore = newGScore + hScore;
 		// If neighbour isn't in openSet or the new path is shorter than the known path, update it.
@@ -75,11 +71,20 @@ draw = () => {
 			newFScore < neighbours[i].fScore
 		) {
 			neighbours[i].fScore = newFScore;
+			neighbours[i].gScore = newGScore;
 			neighbours[i].parent = currNode;
 			if (openSet.indexOf(neighbours[i]) === -1) {
 				openSet.push(neighbours[i]);
 			}
 		}
+	}
+
+	// Update the state of open and closed
+	for (let i = 0; i < openSet.length; i++) {
+		openSet[i].state = 1;
+	}
+	for (let i = 0; i < closedSet.length; i++) {
+		closedSet[i].state = 2;
 	}
 };
 
@@ -143,8 +148,15 @@ getNeighbours = node => {
 
 lowestFScoreNodeIndex = () => {
 	let lowestNodeIndex = 0;
-	for (let i = 0; i < openSet; i++) {
-		if (openSet[i].fScore < openSet[lowestNodeIndex].fScore) {
+	for (let i = 0; i < openSet.length; i++) {
+		let iFScore =
+			openSet[i].fScore === -1 ? Number.MAX_SAFE_INTEGER : openSet[i].fScore;
+		let lowestFscore =
+			openSet[lowestNodeIndex].fScore === -1
+				? Number.MAX_SAFE_INTEGER
+				: openSet[lowestNodeIndex].fScore;
+
+		if (iFScore < lowestFscore) {
 			lowestNodeIndex = i;
 		}
 	}
@@ -192,7 +204,7 @@ clearGrid = () => {
 
 drawPath = nodeWidth => {
 	fill(255, 204, 100);
-	let node = target;
+	let node = openSet[lowestFScoreNodeIndex()];
 	while (node != start) {
 		rect(node.x * nodeWidth, node.y * nodeWidth, nodeWidth, nodeWidth);
 		node = node.parent;
