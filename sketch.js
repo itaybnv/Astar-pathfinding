@@ -77,6 +77,15 @@ draw = () => {
 	}
 };
 
+keyPressed = () => {
+	// If enter pressed and there is a start and target, start the algorithm
+	if ((keyCode == ENTER || keyCode == 32) && start && target) {
+		// Add start to the openSet
+		openSet.push(start);
+		isStart = true;
+	}
+};
+
 mousePressed = () => {
 	let nodeWidth = width / cols;
 
@@ -93,11 +102,9 @@ mousePressed = () => {
 		target = grid[j][i];
 		target.state = 4;
 	}
-	// Set obstacles
-	else {
-		// Add start to the openSet
-		openSet.push(start);
-		isStart = true;
+	// Set obstacles only if algorithm hasn't started yet
+	else if (isStart) {
+
 	}
 };
 
