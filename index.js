@@ -10,6 +10,7 @@ router.get("/", function(req, res) {
 });
 
 app.use("/", router);
-app.listen(process.env.port || 3000);
+let port = process.env.port || 3000;
+app.listen(port);
 
-console.log("Running at Port 3000");
+console.log("Running at Port " + port);

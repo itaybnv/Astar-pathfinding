@@ -3,6 +3,13 @@ let cols = 50;
 let rows = 50;
 let grid = new Array(cols);
 let isStart = false;
+let walls = [
+	[0, 0],
+	[-1, 0],
+	[0, 1],
+	[1, 0],
+	[-1, 0]
+];
 
 // Related to A* algorithm
 let openSet = [];
@@ -119,12 +126,17 @@ mouseDragged = () => {
 	let cellWidth = width / cols;
 
 	// Get the rect the mouse pressed
-	let i = Math.floor(mouseX / cellWidth);
-	let j = Math.floor(mouseY / cellWidth);
-
-	// Set obstacles only if algorithm hasn't started yet
-	if (!isStart && grid[j][i].state !== 3 && grid[j][i].state !== 4) {
-		grid[j][i].state = 5;
+	let x = Math.floor(mouseX / cellWidth);
+	let y = Math.floor(mouseY / cellWidth);
+	for (let i = 0; i < walls.length; i++) {
+		try {
+			if (
+				grid[y + walls[i][0]][x + walls[i][1]].state !== 3 &&
+				grid[y + walls[i][0]][x + walls[i][1]].state !== 4
+			) {
+				grid[y + walls[i][0]][x + walls[i][1]].state = 5;
+			}
+		} catch (error) {}
 	}
 };
 
