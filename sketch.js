@@ -16,10 +16,10 @@ let openSet = [];
 let closedSet = [];
 let start = null;
 let target = null;
-let bias = 0.1;
 
 setup = () => {
 	createCanvas(800, 800);
+	biasSlider = createSlider(0.01, 1, 0.3, 0.01);
 	makeEmptyGrid();
 };
 
@@ -98,9 +98,10 @@ draw = () => {
 
 keyPressed = () => {
 	// If enter pressed and there is a start and target, start the algorithm
-	if ((keyCode == ENTER || keyCode == 32) && start && target) {
+	if ((keyCode == ENTER || keyCode == 32) && start && target && !isStart) {
 		// Add start to the openSet
 		openSet.push(start);
+		bias = biasSlider.value();
 		isStart = true;
 	}
 };
