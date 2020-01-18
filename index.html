@@ -14,5 +14,12 @@
 		<script src="p5.js"></script>
 		<script src="sketch.js"></script>
 	</head>
-	<body></body>
+	<body>
+		<span>This slider controls the bias value. the bias value controls how favorable are paths that are closer to the end, rather than farther from the start. <br>
+			  The higher the bias is, the less the algorithm will look at the wrong direction, but it does mess with the algorithm's perception of diagonals, <br>
+			  and sometimes with low bias values, the algorithm will wrong diagonal paths, but it will get to the answer faster.<br>
+		   
+		</span>
+		<input type="range" style="display: inline; width: 200px;" id="biasSlider" min=0.01 max =1 step=0.01 value=0.3></input>
+	</body>
 </html>

@@ -1,6 +1,6 @@
 // Unrelated to A* algorithm
-let cols = 50;
-let rows = 50;
+let cols = 70;
+let rows = 70;
 let grid = new Array(cols);
 let isStart = false;
 let walls = [
@@ -8,7 +8,7 @@ let walls = [
 	[-1, 0],
 	[0, 1],
 	[1, 0],
-	[-1, 0]
+	[0, -1]
 ];
 
 // Related to A* algorithm
@@ -19,7 +19,7 @@ let target = null;
 
 setup = () => {
 	createCanvas(800, 800);
-	biasSlider = createSlider(0.01, 1, 0.3, 0.01);
+	biasSlider = document.getElementById("biasSlider");
 	makeEmptyGrid();
 };
 
@@ -70,7 +70,6 @@ draw = () => {
 		let newGScore =
 			neighbours[i].distanceFrom(currCell) +
 			(currCell.gScore === -1 ? 0 : currCell.gScore);
-
 		let newFScore = newGScore * bias + hScore;
 		// If neighbour isn't in openSet or the new path is shorter than the known path, update it.
 		if (
@@ -101,7 +100,7 @@ keyPressed = () => {
 	if ((keyCode == ENTER || keyCode == 32) && start && target && !isStart) {
 		// Add start to the openSet
 		openSet.push(start);
-		bias = biasSlider.value();
+		bias = biasSlider.value;
 		isStart = true;
 	}
 };
