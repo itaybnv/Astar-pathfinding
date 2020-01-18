@@ -16,6 +16,7 @@ let openSet = [];
 let closedSet = [];
 let start = null;
 let target = null;
+let bias = 0.1;
 
 setup = () => {
 	createCanvas(800, 800);
@@ -70,7 +71,7 @@ draw = () => {
 			neighbours[i].distanceFrom(currCell) +
 			(currCell.gScore === -1 ? 0 : currCell.gScore);
 
-		let newFScore = newGScore + hScore;
+		let newFScore = newGScore * bias + hScore;
 		// If neighbour isn't in openSet or the new path is shorter than the known path, update it.
 		if (
 			neighbours[i].fScore === -1 ||
